@@ -1,0 +1,113 @@
+.search-form {
+  margin: 0;
+  padding: 70px 70px 10px;
+  box-sizing: border-box;
+  min-height: 222px;
+}
+
+.search-form__container-main {
+  margin: 0 0 69px;
+  padding: 0 30px 0 19px;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 9px;
+  min-height: 72px;
+}
+
+.search-form__line-vert {
+  margin: auto 29px;
+  padding: 0;
+  height: 40px;
+  border-left: 1px solid #cbcbcb;
+}
+
+.search-form__icon {
+  margin: 0;
+  padding: 0;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  object-position: center;
+}
+
+.search-form__submit {
+  margin: 0 0 0 21px;
+  padding: auto;
+  box-sizing: border-box;
+  min-width: 59px;
+  height: 34px;
+  border: none;
+  border-radius: 48px;
+  background-color: black;
+  color: white;
+  font-weight: 500;
+  font-size: 11px;
+  line-height: 18px;
+  transition: opacity 0.5s linear;
+}
+.search-form__submit:hover {
+  opacity: .6;
+  cursor: pointer;
+}
+
+.search-form__input {
+  margin: 0 0 0 10px;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 20px;
+  color: black;
+  width: 100%;
+  transition: border-bottom .5s linear;
+}
+.search-form__input::placeholder {
+  color: #a0a0a0;
+}
+.search-form__input:focus {
+  border-bottom: 1px solid #a0a0a0;
+  margin-bottom: -1px;
+}
+.search-form__input:hover {
+  border-bottom: 1px solid #a0a0a0;
+  margin-bottom: -1px;
+}
+
+@media screen and (max-width: 768px) {
+  .search-form {
+    padding: 80px 30px 10px;
+    min-height: 272px;
+  }
+  .search-form__container-main {
+    margin-bottom: 109px;
+    padding: 0 20px;
+  }
+  .search-form__line-vert {
+    margin: auto 19px;
+  }
+}
+
+@media screen and (max-width: 544px) {
+  .search-form {
+    padding: 80px 14px 10px;
+  }
+  .search-form__container-main {
+    padding: 0 19px;
+  }
+  .search-form__line-vert {
+    display: none;
+  }
+  .search-form__icon {
+    display: none;
+  }
+  .search-form__input {
+    font-size: 14px;
+  }
+}
