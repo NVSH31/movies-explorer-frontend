@@ -51,7 +51,7 @@ function Navigation({loggedIn}) {
           <Link
             className="navigation__button" to="/profile"
           >
-            <img src={ProfImage} className="navigation__button-image" alt="account" />
+            <img src={ProfImage} className="navigation__button-image" alt="ссылка" />
             <span className="medium">Аккаунт</span>
           </Link>
         </nav>
@@ -61,7 +61,7 @@ function Navigation({loggedIn}) {
           <img
             src={BurgButton}
             className="navigation__menu-open"
-            alt="menu"
+            alt="меню"
             onClick={handlerMenuOpen}
           />
           <div
@@ -71,7 +71,7 @@ function Navigation({loggedIn}) {
             <img
               src={CloseIcon}
               className="navigation__close-icon"
-              alt="close"
+              alt="закрыть"
               onClick={handlerMenuClose}
             />
             <Link
@@ -111,7 +111,7 @@ function Navigation({loggedIn}) {
             >
               <img src={ProfImage}
                 className="navigation__button-image"
-                alt="account"
+                alt="ссылка"
               />
               Аккаунт
             </Link>

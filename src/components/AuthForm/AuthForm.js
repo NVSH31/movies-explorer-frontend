@@ -67,6 +67,7 @@ function AuthForm ({
             id="password"
             name="password"
             type="password"
+            placeholder="Ваш пароль"
             required
             className="auth-form__input"
           />

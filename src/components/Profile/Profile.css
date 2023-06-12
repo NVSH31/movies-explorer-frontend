@@ -83,7 +83,7 @@
 }
 
 .profile__button_logout {
-  margin-top: 16px;
+  margin: 16px 0 70px;
   font-weight: 500;
   color: #ff4062;
 }
@@ -99,7 +99,7 @@
     margin-top: 210px;
   }
   .profile__button_logout {
-    margin-top: 16px;
+    margin: 16px 0 269px;
   }
 }
 
@@ -120,6 +120,6 @@
     width: 80%;
   }
   .profile__button_logout {
-    margin-top: 16px;
+    margin: 16px 0 40px;
   }
 }

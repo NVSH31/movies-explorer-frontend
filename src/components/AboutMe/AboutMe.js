@@ -27,7 +27,7 @@ function AboutMe() {
             href="https://github.com/NVSH31"
           >Github</a>
         </div>
-        <img className="about-me__photo" src={Photo} alt="avatar" />
+        <img className="about-me__photo" src={Photo} alt="аватар" />
       </div>
       <Portfolio />
     </section>

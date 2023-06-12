@@ -7,7 +7,7 @@ function Logo() {
 
   return (
     <Link className="logo" to="/">
-      <img src={Logotip} alt="logo" className="logo__image"/>
+      <img src={Logotip} alt="логотип" className="logo__image"/>
     </Link>
   );
 }

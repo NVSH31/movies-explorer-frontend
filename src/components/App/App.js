@@ -33,6 +33,10 @@ function App() {
     setIsPopupOpen(false);
   }
 
+  const logout = () => {
+    setLoggetIn(false);
+  }
+
   return (
     <div className='page'>
       <CurrentUserContext.Provider value={currentUser}>
@@ -40,6 +44,7 @@ function App() {
         <Routes>
           <Route path='/' element={
             <Main
+              logout={logout}
               handleHeader={setIsHeader}
               handleFooter={setIsFooter}
             />

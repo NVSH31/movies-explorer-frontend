@@ -10,7 +10,7 @@ function MoviesCard({
     <li
       className={`movies-card ${savedMoviesComponent && 'movies-card_saved'}`}
     >
-      <img className="movies-card__image" src={data.image} alt="preview"/>
+      <img className="movies-card__image" src={data.image} alt="афиша"/>
       <div className="movies-card__container">
         <p className="movies-card__name">
           {data.nameRu}

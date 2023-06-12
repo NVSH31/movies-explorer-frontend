@@ -8,7 +8,7 @@ function SearchForm() {
   return (
     <section className="search-form">
       <form className="search-form__container-main">
-        <img src={Lupa} className="search-form__icon" alt="icon"/>
+        <img src={Lupa} className="search-form__icon" alt="лупа"/>
         <input
           id="search-input"
           name="search"
