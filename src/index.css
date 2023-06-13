@@ -1,0 +1,68 @@
+@import url('./vendor/normalize.css');
+@import url('./vendor/fonts/fonts.css');
+
+.page {
+  margin: 0 auto;
+  padding: 0;
+  min-width: 320px;
+  max-width: 1280px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  color: #000;
+  font-family: 'Inter', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  position: relative;
+  min-height: 100vh;
+}
+
+.border {
+  border: 1px solid red;
+}
+
+.main {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-name {
+  margin: 0 0 23px;
+  padding: 0;
+  font-weight: 400;
+  line-height: 27px;
+  font-size: 22px;
+  letter-spacing: -0.04em;
+}
+
+.line {
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid black;
+}
+
+.line_gray {
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.gray {
+  color: #a0a0a0;
+}
+
+.black {
+  color: black;
+}
+
+@media screen and (max-width: 544px) {
+  .section-name {
+    line-height: 22px;
+    font-size: 18px;
+    margin-bottom: 28px;
+
+  }
+}

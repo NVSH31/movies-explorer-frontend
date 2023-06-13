@@ -1,0 +1,27 @@
+.top {
+  margin: 0;
+  padding: 0 0 40px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.top__title {
+  margin: 40px 0 0;
+  padding: 0;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 29px;
+}
+
+@media screen and (max-width: 544px) {
+  .top {
+    padding-bottom: 80px;
+    align-items: center;
+  }
+  .top__title {
+    margin: 50px 0 0;
+  }
+}
