@@ -4,12 +4,14 @@ import AuthForm from "../AuthForm/AuthForm";
 import Top from '../Top/Top';
 
 function Login ({
-  isLoading, handleHeader, handleFooter
+  isLoading, handleHeader, handleFooter, handleLogIn,
+  isSubmitError, handleClearSubmitLoginError
 }) {
 
   useEffect(() => {
     handleHeader(false);
     handleFooter(false);
+    handleClearSubmitLoginError();
   }, [handleHeader, handleFooter]);
 
   return (
@@ -18,8 +20,10 @@ function Login ({
         title={"Рады видеть!"}
       />
       <AuthForm
+        handleSubmit={handleLogIn}
         isLoading={isLoading}
         formType={'login'}
+        isSubmitError={isSubmitError}
       />
     </main>
   );

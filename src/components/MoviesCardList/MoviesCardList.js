@@ -1,11 +1,13 @@
 import React from "react";
 import './MoviesCardList.css';
 import MoviesCard from '../MoviesCard/MoviesCard';
+import Preloader from '../Preloader/Preloader';
 
 
 function MoviesCardList({
   moviesList, savedMoviesComponent
 }) {
+
 
   return (
     <section className={`movies-list ${ savedMoviesComponent && `movies-list_saved`}`}>
@@ -16,6 +18,7 @@ function MoviesCardList({
         </p>
       }
       <ul className="movies-list__list">
+
         {
           moviesList && moviesList.length !== 0 &&
           moviesList.map((movie) => {
@@ -24,7 +27,7 @@ function MoviesCardList({
 
             return (
               <MoviesCard
-                key={movie._id}
+                key={ savedMoviesComponent ? movie._id : movie.id}
                 data={movie}
                 savedMoviesComponent={savedMoviesComponent}
                 isLiked={isLiked}
@@ -32,6 +35,7 @@ function MoviesCardList({
             );
           })
         }
+
       </ul>
       { !savedMoviesComponent && moviesList.length !== 0 &&
         <button className="movies-list__button">

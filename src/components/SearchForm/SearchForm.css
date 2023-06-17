@@ -80,6 +80,24 @@
   margin-bottom: -1px;
 }
 
+.search-form__empty-input {
+  display: none;
+  margin: 0;
+  padding: 0;
+  width: fit-content;
+  height: 13px;
+  position: absolute;
+  bottom: -23px;
+  left: 65px;
+  font-weight: 500;
+  font-size: 11px;
+  line-height: 13px;
+  color: #ff4062;
+}
+.search-form__empty-input_visible {
+  display: inline;
+}
+
 @media screen and (max-width: 768px) {
   .search-form {
     padding: 80px 30px 10px;
@@ -109,5 +127,8 @@
   }
   .search-form__input {
     font-size: 14px;
+  }
+  .search-form__empty-input {
+    left: 30px;
   }
 }

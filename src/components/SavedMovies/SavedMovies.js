@@ -2,12 +2,12 @@ import React, { useEffect } from "react";
 import SearchForm from '../SearchForm/SearchForm';
 import MoviesCardList from '../MoviesCardList/MoviesCardList';
 import './SavedMovies.css';
-import { savedMoviesList } from '../../utils/constants';
-// import { emptyMoviesList } from '../../utils/constants';
+
 
 
 function SavedMovies({
-  handleHeader, handleFooter, isLoading
+  handleHeader, handleFooter, isLoading, handleSearchSavedMoviesSubmit,
+  moviesList
 }) {
 
   useEffect(() => {
@@ -17,10 +17,11 @@ function SavedMovies({
 
   return (
     <main className="saved-movies">
-      <SearchForm />
+      <SearchForm
+        handleSubmit={handleSearchSavedMoviesSubmit}
+      />
       <MoviesCardList
-        moviesList={savedMoviesList}
-        // moviesList={emptyMoviesList}
+        moviesList={moviesList}
 
         savedMoviesComponent={true}
       />

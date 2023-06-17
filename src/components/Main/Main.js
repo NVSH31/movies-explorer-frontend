@@ -6,14 +6,13 @@ import AboutMe from "../AboutMe/AboutMe";
 
 
 function Main({
-  logout, handleHeader, handleFooter
+  handleHeader, handleFooter
 }) {
 
   useEffect(() => {
     handleHeader(true);
     handleFooter(true);
-    logout();
-  }, [handleHeader, handleFooter, logout]);
+  }, [handleHeader, handleFooter]);
 
 
   return (
