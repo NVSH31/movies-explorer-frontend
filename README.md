@@ -5,6 +5,9 @@
 
 [Ссылка на GH pages](https://nvsh31.github.io/movies-explorer-frontend).
 
+[Ссылка на Pull request](https://github.com/NVSH31/movies-explorer-frontend/pull/2)
+
+[Ссылка на сайт](https://shpaknv.diplom.nomoredomains.rocks/)
 
 ## Доступные скрипты
 
@@ -15,4 +18,3 @@
 
 ### `npm run build`
 для создания рабочего кода
-
