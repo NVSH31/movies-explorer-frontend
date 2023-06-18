@@ -5,8 +5,6 @@ function FilterCheckbox({
   checked, changeChecked
 }) {
 
-  console.log('IN FilterCheckbox checked =', checked);
-
   return (
     <div className="filter-checkbox">
       <label className="filter-checkbox__label">

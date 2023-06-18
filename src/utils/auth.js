@@ -1,7 +1,6 @@
 import { BASE_URL } from "./constants";
 
 const checkResponse = (res) => {
-  // return res.ok ? res.json() : Promise.reject(`Error: ${res.statusText}`);
   return res.ok ? res.json() : Promise.reject(res.json());
 }
 

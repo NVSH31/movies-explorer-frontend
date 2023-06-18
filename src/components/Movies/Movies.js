@@ -6,43 +6,33 @@ import MoviesCardList from '../MoviesCardList/MoviesCardList';
 
 function Movies({
   handleHeader, handleFooter, isLoading, handleSearchMoviesSubmit,
-  isChecked, handleChangeChecked
+  isChecked, handleChangeChecked, moviesListTransmitted, setLike, removeLike,
+  savedMovies
 }) {
 
-  let moviesList = [];
-
-  if (localStorage.getItem('shortMoviesList')
-    && isChecked
-  ) {
-    moviesList = JSON.parse(localStorage.getItem('shortMoviesList'));
-    // console.log('IN 1');
-  } else if (localStorage.getItem('moviesList')
-    && !isChecked
-  ) {
-    moviesList = JSON.parse(localStorage.getItem('moviesList'));
-    // console.log('IN 2');
-  }
-
-  // if (localStorage.getItem('shortMoviesList')
-  //   && localStorage.getItem('isChecked')
-  //   && localStorage.getItem('isChecked') === 'false'
-  // ) {
-  //   moviesList = JSON.parse(localStorage.getItem('shortMoviesList'));
-  //   console.log('IN 1');
-  // } else if (localStorage.getItem('moviesList')
-  //   && localStorage.getItem('isChecked')
-  //   && localStorage.getItem('isChecked') === 'true'
-  // ) {
-  //   moviesList = JSON.parse(localStorage.getItem('moviesList'));
-  //   console.log('IN 2');
-  // }
-
-  // console.log('IN 3');
 
   useEffect(() => {
     handleHeader(true);
     handleFooter(true);
   }, [handleHeader, handleFooter]);
+
+  const drawComponent = () => {
+    if (isLoading) {
+      return <Preloader />;
+    } else if (!localStorage.getItem('allMovies')) {
+      return (<p className="movies-list__text-empty">Начните поиск</p>);
+    } else if (moviesListTransmitted.length === 0) {
+      return (<p className="movies-list__text-empty">Ничего не найдено</p>);
+    } else {
+      return <MoviesCardList
+        moviesList={moviesListTransmitted}
+        savedMoviesComponent={false}
+        setLike={setLike}
+        removeLike={removeLike}
+        savedMovies={savedMovies}
+      />;
+    }
+  }
 
   return (
     <main className="main">
@@ -50,13 +40,9 @@ function Movies({
         handleSubmit={handleSearchMoviesSubmit}
         isChecked={isChecked}
         handleChangeChecked={handleChangeChecked}
+        savedMoviesComponent={false}
       />
-      { isLoading ? <Preloader/> :
-        <MoviesCardList
-          moviesList={moviesList}
-          savedMoviesComponent={false}
-        />
-      }
+      { drawComponent() }
     </main>
   );
 }

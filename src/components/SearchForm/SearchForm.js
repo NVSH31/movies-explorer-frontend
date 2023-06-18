@@ -4,7 +4,7 @@ import FilterCheckbox from "../FilterCheckbox/FilterCheckbox";
 import Lupa from '../../images/lupa.svg';
 
 function SearchForm({
-  handleSubmit, isChecked, handleChangeChecked
+  handleSubmit, isChecked, handleChangeChecked, savedMoviesComponent
 }) {
 
   const [inputValue, setInputValue] = useState('');
@@ -16,10 +16,10 @@ function SearchForm({
   }
 
   useEffect(() => {
-    if (localStorage.getItem('keyWordMovies')
-    ) {
-      setInputValue(localStorage.getItem('keyWordMovies'));
-    }
+    setInputValue(
+      savedMoviesComponent ? localStorage.getItem('keyWordSavedMovies') :
+      localStorage.getItem('keyWordMovies')
+    );
   },[]);
 
   const onSubmit = (e) => {

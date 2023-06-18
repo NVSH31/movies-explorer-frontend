@@ -8,7 +8,13 @@ class Api {
   }
 
   _checkResponse(res) {
-    return res.ok ? res.json() : Promise.reject(res.json());
+    if (res.status === 200 || res.status === 201) {
+      return res.json();
+    } else if (res.status === 204) {
+      return '';
+    } else {
+      return Promise.reject(res.json());
+    }
   }
 
   _request(url, options) {
@@ -98,7 +104,6 @@ class Api {
           },
       });
   }
-
 }
 
 const api = new Api({

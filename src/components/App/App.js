@@ -14,7 +14,8 @@ import Popup from '../Popup/Popup';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 import api from '../../utils/MainApi';
 import * as moviesApi from '../../utils/MoviesApi';
-import { SHORT_MOVIE } from '../../utils/constants';
+import { SHORT_MOVIE, MOVIES_SERVER_ERROR, BEATFILMS_URL } from '../../utils/constants';
+import { setOne, setSeveral, removeSeveral } from '../../utils/localStorage';
 
 
 
@@ -35,11 +36,12 @@ function App() {
   const [isSubmitProfileMessage, setIsSubmitProfileMessage] = useState('');
 
   const [isChecked, setIsChecked] = useState(false);
+  const [isSavedChecked, setIsSavedChecked] = useState(false);
 
-  const [allMovies, setAllMovies] = useState([]);
-  // const [moviesList, setMoviesList] = useState([]);
-  // const [savedMovies, setSavedMovies] = useState([]);
+  const [savedMovies, setSavedMovies] = useState([]);
 
+  const [moviesListTransmitted, setMoviesListTransmitted] = useState([]);
+  const [savedMoviesListTransmitted, setSavedMoviesListTransmitted] = useState([]);
 
 
   const navigate = useNavigate();
@@ -50,9 +52,13 @@ function App() {
     setIsPopupMessage('');
   }
 
-  const openPopup = (message) => {
+  const openPopup = (...message) => {
     setIsPopupOpen(true);
-    setIsPopupMessage(message);
+    let fullMessage = '';
+    for (let i=0; i < message.length; i++) {
+      fullMessage = fullMessage + ' ' + message[i];
+    }
+    setIsPopupMessage(fullMessage);
   }
 
   const handleClearSubmitLoginError = () => {
@@ -76,18 +82,24 @@ function App() {
     localStorage.setItem('isChecked', isChecked);
   }
 
+  const handleChangeSavedChecked = () => {
+    setIsSavedChecked(!isSavedChecked);
+    localStorage.setItem('isSavedChecked', isSavedChecked);
+  }
+
   useEffect(() => {
     if (localStorage.getItem('jwt')) {
       const jwt = localStorage.getItem('jwt');
-      api.checkToken(jwt)
-        .then(currentUserProfile => {
+      Promise.all([api.checkToken(jwt), api.getSavedMovies()])
+        .then(([currentUserProfile, movies]) => {
           if (currentUserProfile) {
             setLoggedIn(true);
             setCurrentUser(currentUserProfile);
             navigate('/movies', { replace: true });
           }
+          setSavedMovies(movies.reverse());
         })
-        .catch((error) => {
+        .catch(error => {
           error
           .then(data => {
             console.log(data.message);
@@ -101,12 +113,6 @@ function App() {
     }
   },[loggedIn]);
 
-  // useEffect(() => {
-  //   if (loggedIn) {
-  //     localStorage.setItem('isChecked', isChecked);
-  //   }
-  // },[loggedIn]);
-
   const handleLogIn = (loginData) => {
     setIsSubmitLoginError('');
     setIsLoading(true);
@@ -118,7 +124,7 @@ function App() {
         navigate('/movies', {replace: true});
       }
     })
-    .catch((error) => {
+    .catch(error => {
       error
       .then(data => {
         console.log(data.message);
@@ -180,52 +186,145 @@ function App() {
   }
 
   const handleLogOut = () => {
-    localStorage.removeItem('jwt');
-    localStorage.removeItem('keyWordMovies');
-    localStorage.removeItem('isChecked');
-    localStorage.removeItem('moviesList');
-    localStorage.removeItem('shortMoviesList');
+    removeSeveral(
+      'jwt', 'keyWordMovies', 'keyWordSavedMovies',
+      'isChecked', 'isSavedChecked',
+      'moviesList', 'shortMoviesList', 'allMovies'
+    );
     setLoggedIn(false);
     navigate('/', { replace: true });
   }
 
-
   const handleSearchMoviesSubmit = ({ keyWord }) => {
 
+    let moviesList = [];
+    let shortMoviesList = [];
+
+    const generateMoviesLists = () => {
+      moviesList = JSON.parse(localStorage.getItem('allMovies')).filter(
+        movie => movie.nameRU.toUpperCase().includes(keyWord.toUpperCase())
+      );
+      shortMoviesList = moviesList.filter(movie => movie.duration <= SHORT_MOVIE);
+
+      setSeveral(
+        ['keyWordMovies', keyWord],
+        ['isChecked', isChecked],
+        ['moviesList', JSON.stringify(moviesList)],
+        ['shortMoviesList', JSON.stringify(shortMoviesList)],
+      );
+
+      isChecked ? setMoviesListTransmitted(shortMoviesList) : setMoviesListTransmitted(moviesList);
+    }
+
     if (keyWord) {
+      if (!localStorage.getItem('allMovies')) {
+        setIsLoading(true);
+        moviesApi.getMovies()
+          .then(data => {
+            setOne('allMovies', JSON.stringify(data));
+            generateMoviesLists();
+          })
+          .catch(error => {
+            error
+            .then(data => {
+              openPopup(MOVIES_SERVER_ERROR, data.statusCode, data.error);
+              console.log('error :', data);
+            })
+            .catch(e => {
+              console.log('e =' , e);
+            })
+          })
+          .finally(() => setIsLoading(false));
+      } else {
+        generateMoviesLists();
+      }
 
-      setIsLoading(true);
-      moviesApi.getMovies()
-        .then(data => {
-
-          // setAllMovies([data, ...allMovies]);
-          setAllMovies(data);
-
-          const moviesList = allMovies.filter(
-            movie => movie.nameRU.toUpperCase().includes(keyWord.toUpperCase())
-          );
-
-
-          const shortMoviesList = moviesList.filter(movie => movie.duration <= SHORT_MOVIE);
-
-          localStorage.setItem('keyWordMovies', keyWord);
-
-          localStorage.setItem('isChecked', isChecked);
-
-          localStorage.setItem('moviesList', JSON.stringify(moviesList));
-          localStorage.setItem('shortMoviesList', JSON.stringify(shortMoviesList));
-
-        })
-        .catch(e => {
-          console.log(e);
-          // openPopup(e);
-        })
-        .finally(() => setIsLoading(false));
     }
   }
 
   const handleSearchSavedMoviesSubmit = ({ keyWord }) => {
+    if (keyWord) {
+      let moviesList = [];
+      let shortMoviesList = [];
 
+      moviesList = savedMovies.filter(
+        movie => movie.nameRU.toUpperCase().includes(keyWord.toUpperCase())
+      );
+      shortMoviesList = moviesList.filter(movie => movie.duration <= SHORT_MOVIE);
+
+      setSeveral(
+        ['keyWordSavedMovies', keyWord],
+        ['isSavedChecked', isSavedChecked],
+      );
+
+      overwriteStateArray(
+        savedMoviesListTransmitted,
+        setSavedMoviesListTransmitted,
+        isSavedChecked ? shortMoviesList : moviesList
+      );
+    }
+  }
+
+  const overwriteStateArray = (stateArray, setStateArray, newArray) => {
+    let copy = Object.assign([], stateArray);
+    copy.splice(0, stateArray.length);
+    copy.push(...newArray);
+    setStateArray(copy);
+  }
+
+  const setLike = (movie) => {
+    api.saveMovie({
+      country: movie.country,
+      director: movie.director,
+      duration: movie.duration,
+      year: movie.year,
+      description: movie.description,
+      image: `${BEATFILMS_URL}${movie.image.url}`,
+      trailerLink: movie.trailerLink,
+      nameRU: movie.nameRU,
+      nameEN: movie.nameEN,
+      thumbnail: `${BEATFILMS_URL}${movie.image.formats.thumbnail.url}`,
+      movieId: String(movie.id),
+    })
+    .then(newSavedMovie => {
+      setSavedMovies([newSavedMovie, ...savedMovies]);
+    })
+    .catch(error => {
+      error
+      .then(data => {
+        openPopup(data.message);
+      })
+      .catch(e => {
+        console.log(e);
+        openPopup(e);
+      })
+    });
+  }
+
+  const removeLike = (movie, savedMoviesComponent) => {
+
+    let deletedMovie = {};
+
+    if (savedMoviesComponent) {
+      deletedMovie = movie;
+    } else {
+      deletedMovie = savedMovies.find(item => item.movieId === movie.id);
+    }
+
+    api.deleteMovie(deletedMovie._id)
+    .then(() => {
+      setSavedMovies((state) => state.filter(item => item._id !== deletedMovie._id));
+    })
+    .catch((error) => {
+      error
+      .then(data => {
+        openPopup(data.message);
+      })
+      .catch(e => {
+        console.log(e);
+        openPopup(e);
+      })
+    });
   }
 
   return (
@@ -289,6 +388,10 @@ function App() {
               handleSearchMoviesSubmit={handleSearchMoviesSubmit}
               isChecked={isChecked}
               handleChangeChecked={handleChangeChecked}
+              moviesListTransmitted={moviesListTransmitted}
+              setLike={setLike}
+              removeLike={removeLike}
+              savedMovies={savedMovies}
             />
           } replace />
 
@@ -300,6 +403,12 @@ function App() {
               handleFooter={setIsFooter}
               isLoading={isLoading}
               handleSearchSavedMoviesSubmit={handleSearchSavedMoviesSubmit}
+              openPopup={openPopup}
+              savedMovies={savedMovies}
+              savedMoviesListTransmitted={savedMoviesListTransmitted}
+              isChecked={isSavedChecked}
+              handleChangeChecked={handleChangeSavedChecked}
+              removeLike={removeLike}
             />
           } replace />
 
