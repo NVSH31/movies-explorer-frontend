@@ -3,13 +3,13 @@ import './SearchForm.css';
 import FilterCheckbox from "../FilterCheckbox/FilterCheckbox";
 import Lupa from '../../images/lupa.svg';
 
+
 function SearchForm({
   handleSubmit, isChecked, handleChangeChecked, savedMoviesComponent
 }) {
 
   const [inputValue, setInputValue] = useState('');
   const [isEmptyInput, setIsEmptyInput] = useState(false);
-
 
   const handleChangeInput = (e) => {
     setInputValue(e.target.value);

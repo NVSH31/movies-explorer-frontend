@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import Header from '../Header/Header';
 import Main from '../Main/Main';
@@ -14,8 +14,10 @@ import Popup from '../Popup/Popup';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 import api from '../../utils/MainApi';
 import * as moviesApi from '../../utils/MoviesApi';
-import { SHORT_MOVIE, MOVIES_SERVER_ERROR, BEATFILMS_URL } from '../../utils/constants';
-import { setOne, setSeveral, removeSeveral } from '../../utils/localStorage';
+import {
+  IS_SHORT_MOVIE, MOVIES_SERVER_ERROR, BEATFILMS_URL, UPDATE_USER_MESSAGE
+} from '../../utils/constants';
+import { setOne, setSeveral, removeSeveral, updatePages } from '../../utils/localStorage';
 
 
 
@@ -43,8 +45,11 @@ function App() {
   const [moviesListTransmitted, setMoviesListTransmitted] = useState([]);
   const [savedMoviesListTransmitted, setSavedMoviesListTransmitted] = useState([]);
 
+  const [isBlocked, setIsBlocked] = useState(false);
+
 
   const navigate = useNavigate();
+  const location = useLocation();
 
 
   const closePopup = () => {
@@ -95,9 +100,33 @@ function App() {
           if (currentUserProfile) {
             setLoggedIn(true);
             setCurrentUser(currentUserProfile);
-            navigate('/movies', { replace: true });
+
+            if (localStorage.getItem('page')) {
+              navigate(localStorage.getItem('page'), { replace: true });
+            } else {
+              navigate('/movies', { replace: true });
+            }
+
           }
           setSavedMovies(movies.reverse());
+
+          if (
+            localStorage.getItem('keyWordMovies')
+            && localStorage.getItem('allMovies')
+            && localStorage.getItem('isChecked')
+          ) {
+            generateMoviesLists(localStorage.getItem('keyWordMovies'));
+          }
+
+          if (
+            localStorage.getItem('keyWordSavedMovies')
+            && localStorage.getItem('isSavedChecked')
+          ) {
+            generateSavedMoviesLists(localStorage.getItem('keyWordSavedMovies'), []);
+          } else {
+            generateSavedMoviesLists('', movies.reverse());
+          }
+
         })
         .catch(error => {
           error
@@ -111,11 +140,31 @@ function App() {
           })
         })
     }
+
   },[loggedIn]);
+
+
+  useEffect(() => {
+    if (localStorage.getItem('isChecked') === 'true') {
+      setIsChecked(true);
+    } else {
+      setIsChecked(false);
+    }
+    if (localStorage.getItem('isSavedChecked') === 'true') {
+      setIsSavedChecked(true);
+    } else {
+      setIsSavedChecked(false);
+    }
+
+    updatePages(location.pathname);
+
+  }, []);
+
 
   const handleLogIn = (loginData) => {
     setIsSubmitLoginError('');
     setIsLoading(true);
+    setIsBlocked(true);
     api.authorize(loginData.password, loginData.email)
     .then((data) => {
       if (data.token) {
@@ -125,6 +174,7 @@ function App() {
       }
     })
     .catch(error => {
+      setIsBlocked(false);
       error
       .then(data => {
         console.log(data.message);
@@ -141,11 +191,13 @@ function App() {
   const handleRegister = (registerData) => {
     setIsSubmitRegisterError('');
     setIsLoading(true);
+    setIsBlocked(true);
     api.register(registerData.name, registerData.email, registerData.password)
     .then((data) => {
       handleLogIn({ password: registerData.password, email: registerData.email });
     })
     .catch((error) => {
+      setIsBlocked(false);
       error
       .then(data => {
         console.log(data.message);
@@ -165,12 +217,14 @@ function App() {
     setIsSubmitProfileError('');
     setIsSubmitProfileMessage('');
     setIsLoading(true);
+    setIsBlocked(true);
     api.editMe(userData.name, userData.email)
     .then((userData) => {
       setCurrentUser(userData);
-      setIsSubmitProfileMessage('Ваши данные изменены');
+      setIsSubmitProfileMessage(UPDATE_USER_MESSAGE);
     })
     .catch((error) => {
+      setIsBlocked(false);
       error
       .then(data => {
         setIsSubmitProfileError(data.message);
@@ -186,43 +240,45 @@ function App() {
   }
 
   const handleLogOut = () => {
+
     removeSeveral(
       'jwt', 'keyWordMovies', 'keyWordSavedMovies',
       'isChecked', 'isSavedChecked',
-      'moviesList', 'shortMoviesList', 'allMovies'
+      'moviesList', 'shortMoviesList', 'allMovies',
+      'moviesSavedList','shortMoviesSavedList', 'page'
     );
     setLoggedIn(false);
     navigate('/', { replace: true });
   }
 
-  const handleSearchMoviesSubmit = ({ keyWord }) => {
-
+// внешняя функция для фильмов
+  const generateMoviesLists = (keyWord) => {
     let moviesList = [];
     let shortMoviesList = [];
 
-    const generateMoviesLists = () => {
-      moviesList = JSON.parse(localStorage.getItem('allMovies')).filter(
-        movie => movie.nameRU.toUpperCase().includes(keyWord.toUpperCase())
-      );
-      shortMoviesList = moviesList.filter(movie => movie.duration <= SHORT_MOVIE);
+    moviesList = JSON.parse(localStorage.getItem('allMovies')).filter(
+      movie => movie.nameRU.toUpperCase().includes(keyWord.toUpperCase())
+    );
+    shortMoviesList = moviesList.filter(movie => movie.duration <= IS_SHORT_MOVIE);
 
-      setSeveral(
-        ['keyWordMovies', keyWord],
-        ['isChecked', isChecked],
-        ['moviesList', JSON.stringify(moviesList)],
-        ['shortMoviesList', JSON.stringify(shortMoviesList)],
-      );
+    setSeveral(
+      ['keyWordMovies', keyWord],
+      ['isChecked', isChecked],
+      ['moviesList', JSON.stringify(moviesList)],
+      ['shortMoviesList', JSON.stringify(shortMoviesList)],
+    );
 
-      isChecked ? setMoviesListTransmitted(shortMoviesList) : setMoviesListTransmitted(moviesList);
-    }
+    isChecked ? setMoviesListTransmitted(shortMoviesList) : setMoviesListTransmitted(moviesList);
+  }
 
+  const handleSearchMoviesSubmit = ({ keyWord }) => {
     if (keyWord) {
       if (!localStorage.getItem('allMovies')) {
         setIsLoading(true);
         moviesApi.getMovies()
           .then(data => {
             setOne('allMovies', JSON.stringify(data));
-            generateMoviesLists();
+            generateMoviesLists(keyWord);
           })
           .catch(error => {
             error
@@ -236,32 +292,43 @@ function App() {
           })
           .finally(() => setIsLoading(false));
       } else {
-        generateMoviesLists();
+        generateMoviesLists(keyWord);
       }
-
     }
+  }
+
+  // внешняя функция для сохранённых фильмов
+  const generateSavedMoviesLists = (keyWord, startList) => {
+    let moviesList = [];
+    let shortMoviesList = [];
+
+    if (keyWord) {
+      moviesList = savedMovies.filter(
+        movie => movie.nameRU.toUpperCase().includes(keyWord.toUpperCase())
+      );
+    } else {
+      moviesList = startList;
+    }
+
+    shortMoviesList = moviesList.filter(movie => movie.duration <= IS_SHORT_MOVIE);
+
+    setSeveral(
+      ['keyWordSavedMovies', keyWord],
+      ['isSavedChecked', isSavedChecked],
+      ['moviesSavedList', JSON.stringify(moviesList)],
+      ['shortMoviesSavedList', JSON.stringify(shortMoviesList)],
+    );
+
+    overwriteStateArray(
+      savedMoviesListTransmitted,
+      setSavedMoviesListTransmitted,
+      isSavedChecked ? shortMoviesList : moviesList
+    );
   }
 
   const handleSearchSavedMoviesSubmit = ({ keyWord }) => {
     if (keyWord) {
-      let moviesList = [];
-      let shortMoviesList = [];
-
-      moviesList = savedMovies.filter(
-        movie => movie.nameRU.toUpperCase().includes(keyWord.toUpperCase())
-      );
-      shortMoviesList = moviesList.filter(movie => movie.duration <= SHORT_MOVIE);
-
-      setSeveral(
-        ['keyWordSavedMovies', keyWord],
-        ['isSavedChecked', isSavedChecked],
-      );
-
-      overwriteStateArray(
-        savedMoviesListTransmitted,
-        setSavedMoviesListTransmitted,
-        isSavedChecked ? shortMoviesList : moviesList
-      );
+      generateSavedMoviesLists(keyWord);
     }
   }
 
@@ -336,6 +403,7 @@ function App() {
             <Main
               handleHeader={setIsHeader}
               handleFooter={setIsFooter}
+              loggedIn={loggedIn}
             />
           }/>
           <Route path='/signin' element={
@@ -347,6 +415,8 @@ function App() {
               handleLogIn={handleLogIn}
               isSubmitError={isSubmitLoginError}
               handleClearSubmitLoginError={handleClearSubmitLoginError}
+              isBlocked={isBlocked}
+              setIsBlocked={setIsBlocked}
             />
           } />
 
@@ -359,6 +429,8 @@ function App() {
               handleRegister={handleRegister}
               isSubmitError={isSubmitRegisterError}
               handleClearSubmitRegisterError={handleClearSubmitRegisterError}
+              isBlocked={isBlocked}
+              setIsBlocked={setIsBlocked}
             />
           } />
 
@@ -375,6 +447,8 @@ function App() {
               handleClearSubmitProfileError={handleClearSubmitProfileError}
               isSubmitMessage={isSubmitProfileMessage}
               handleClearSubmitProfileMessage={handleClearSubmitProfileMessage}
+              isBlocked={isBlocked}
+              setIsBlocked={setIsBlocked}
             />
           } replace />
 

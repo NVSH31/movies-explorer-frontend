@@ -2,12 +2,20 @@ import React, { useEffect, useContext, useState } from "react";
 import './Profile.css';
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 import { validName, validEmail } from "../../utils/validators";
+import { useLocation } from "react-router-dom";
+import { updatePages } from "../../utils/localStorage";
 
 function Profile({
   handleHeader, handleFooter, isLoading, handleLogOut,
   handleUpdateUser, isSubmitError, handleClearSubmitProfileError,
-  isSubmitMessage, handleClearSubmitProfileMessage
+  isSubmitMessage, handleClearSubmitProfileMessage,
+  isBlocked, setIsBlocked
 }) {
+
+  const currentUser = useContext(CurrentUserContext);
+
+  const location = useLocation();
+
   const [inputsValid, setInputsValid] = useState(false);
 
   const validators = {
@@ -36,7 +44,6 @@ function Profile({
     }
   });
 
-  const currentUser = useContext(CurrentUserContext);
 
   const [inputValues, setInputValues] = useState({
     name: '',
@@ -48,12 +55,12 @@ function Profile({
     setInputValues(prevState => ({...prevState, [name]: value}));
   }
 
-
   useEffect(() => {
     setInputValues({
       name: currentUser.name,
       email: currentUser.email,
     });
+    setIsBlocked(false);
   }, [currentUser]);
 
   useEffect(() => {
@@ -61,6 +68,7 @@ function Profile({
     handleFooter(false);
     handleClearSubmitProfileError();
     handleClearSubmitProfileMessage();
+    updatePages(location.pathname);
   }, [handleHeader, handleFooter]);
 
   useEffect(() => {
@@ -79,7 +87,8 @@ function Profile({
 
     setInputsValid(
       !(Object.values(inputNameValid).some(value => value === true)) &&
-      !(Object.values(inputEmailValid).some(value => value === true))
+      !(Object.values(inputEmailValid).some(value => value === true)) &&
+      ((inputValues.name !== currentUser.name) || (inputValues.email !== currentUser.email))
     );
 
     setErrors({
@@ -109,7 +118,7 @@ function Profile({
           <div className="profile__input-container">
             <label className="profile__label">Имя</label>
             <input
-              className="profile__input"
+              className={`profile__input ${ isBlocked && 'blocked' }`}
               type="text"
               name="name"
               id="name-input"
@@ -131,7 +140,7 @@ function Profile({
           <div className="profile__input-container">
             <label className="profile__label">E-mail</label>
             <input
-              className="profile__input"
+              className={`profile__input ${ isBlocked && 'blocked' }`}
               type="email"
               name="email"
               id="email-input"
@@ -150,7 +159,7 @@ function Profile({
         </div>
         { inputsValid ? (
           <button
-            type="submit" className="profile__button">
+            type="submit" className={`profile__button ${isBlocked && 'blocked'}`}>
             {isLoading ? 'Редактирование...' : 'Редактировать'}
 
           </button>

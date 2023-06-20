@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import './MoviesCard.css';
-import { BEATFILMS_URL } from "../../utils/constants";
+import { BEATFILMS_URL, MIN_IN_HOUR } from "../../utils/constants";
 
 function MoviesCard({
   data, savedMoviesComponent, setLike, removeLike, savedMovies
@@ -18,11 +18,11 @@ function MoviesCard({
   },[savedMovies]);
 
   const modifedDuration = (duration) => {
-    if (duration < 60) {
+    if (duration < MIN_IN_HOUR) {
       return `${duration}м`;
     } else {
-      const minuts = Math.trunc(duration%60) ? ` ${Math.trunc(duration%60)}м` : '';
-      return (`${Math.trunc(duration/60)}ч ${minuts}`);
+      const minuts = Math.trunc(duration%MIN_IN_HOUR) ? ` ${Math.trunc(duration%MIN_IN_HOUR)}м` : '';
+      return (`${Math.trunc(duration/MIN_IN_HOUR)}ч ${minuts}`);
     }
   }
 
