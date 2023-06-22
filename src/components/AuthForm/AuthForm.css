@@ -11,6 +11,7 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+  position: relative;
 }
 
 .auth-form__input-container {
@@ -53,7 +54,7 @@
 .auth-form__error {
   margin: 0;
   padding: 0;
-  display: none;
+  /* display: none; */
   position: absolute;
   bottom: 3px;
   left: 0;
@@ -64,9 +65,15 @@
   height: 12px;
   overflow: hidden;
 }
-.auth-form__error_visible {
+/* .auth-form__error_visible {
   display: inline;
+} */
+.auth-form__error_form {
+  word-wrap: break-word;
+  bottom: 65px;
+  height: 24px;
 }
+
 
 .auth-form__submit {
   margin: 71px 0 16px;
@@ -89,6 +96,11 @@
 .auth-form__submit:hover {
   opacity: .6;
   cursor: pointer;
+}
+
+.auth-form__submit_disabled {
+  background-color: #a0a0a0;
+  pointer-events: none;
 }
 
 .auth-form__submit-signature {

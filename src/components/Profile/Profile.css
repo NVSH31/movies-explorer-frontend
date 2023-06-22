@@ -15,7 +15,23 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  position: relative;
 }
+.profile__form-error {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 26px;
+  position: absolute;
+  bottom: 40px;
+  text-align: center;
+  overflow: hidden;
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 13px;
+  color: #ff4062;
+}
+
 
 .profile__data-container {
   margin: 0;
@@ -33,6 +49,7 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
 .profile__label {
@@ -66,6 +83,21 @@
   margin-bottom: -1px;
 }
 
+.profile__input-error {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  position: absolute;
+  bottom: -14px;
+  text-align: right;
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 13px;
+  color: #ff4062;
+  overflow: hidden;
+  height: 13px;
+}
+
 .profile__button {
   margin: 220px 0 0;
   padding: 0;
@@ -80,6 +112,10 @@
 .profile__button:hover {
   opacity: .6;
   cursor: pointer;
+}
+.profile__button_disabled {
+  color: #a0a0a0;
+  pointer-events: none;
 }
 
 .profile__button_logout {

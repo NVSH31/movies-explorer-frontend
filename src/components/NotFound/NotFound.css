@@ -24,6 +24,8 @@
 }
 
 .not-found__link {
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
   margin: 184px 0 0;
   padding: 0;
   text-decoration: none;

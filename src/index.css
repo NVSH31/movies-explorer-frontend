@@ -58,6 +58,10 @@
   color: black;
 }
 
+.blocked {
+  pointer-events:none;
+}
+
 @media screen and (max-width: 544px) {
   .section-name {
     line-height: 22px;
